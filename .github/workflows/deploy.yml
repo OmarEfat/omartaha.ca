@@ -14,8 +14,12 @@ jobs:
 
       - name: Deploy to server
         run: |
-          # Copy all files to web directory
-          rsync -av --exclude='.git*' --exclude='.github' --delete . /var/www/html/
+          # Copy all files to web directory with sudo
+          sudo rsync -av --exclude='.git*' --exclude='.github' --delete . /var/www/html/
+          
+          # Fix ownership and permissions
+          sudo chown -R www-data:www-data /var/www/html/
+          sudo chmod -R 755 /var/www/html/
           
           echo "🎉 Files deployed successfully!"
           echo "📁 Deployed to: /var/www/html/"
