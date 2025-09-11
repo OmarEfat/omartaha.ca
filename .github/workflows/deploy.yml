@@ -1,0 +1,21 @@
+name: Deploy Omar Taha Portfolio
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: [self-hosted, Linux, X64]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy to server
+        run: |
+          # Copy all files to web directory
+          rsync -av --exclude='.git*' --exclude='.github' --delete . /var/www/html/
+          
+          echo "🎉 Files deployed successfully!"
+          echo "📁 Deployed to: /var/www/html/"
