@@ -15,13 +15,4 @@ jobs:
       - name: Deploy to server
         run: |
           TARGET=/var/www/omartaha.ca/html
-          
-          # Copy repo files to web directory
-          sudo rsync -av --exclude='.git*' --exclude='.github' --delete . $TARGET
-          
-          # Fix ownership and permissions for Nginx
-          sudo chown -R www-data:www-data $TARGET
-          sudo chmod -R 755 $TARGET
-          
-          echo "🎉 Files deployed successfully!"
-          echo "📁 Deployed to: $TARGET"
+          rsync -av --exclude='.git*' --exclude='.github' --delete . $TARGET
