@@ -691,3 +691,13 @@ if (typeof module !== 'undefined' && module.exports) {
     };
 }
 
+function setCurrentYear(elementId) {
+    const year = new Date().getFullYear();
+    document.getElementById(elementId).textContent = year;
+  }
+  
+  // call it after DOM loads
+  document.addEventListener("DOMContentLoaded", () => {
+    setCurrentYear("year");
+  });
+  
