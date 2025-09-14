@@ -502,6 +502,19 @@ body {
     margin-bottom: var(--space-2);
 }
 
+.timeline-dates-vertical {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    margin-bottom: var(--space-2);
+}
+
+.timeline-date-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+}
+
 .timeline-header {
     display: flex;
     justify-content: space-between;
