@@ -952,9 +952,10 @@ body {
 }
 
 .last-updated {
-    font-size: var(--font-size-sm);
-    color: rgba(255, 255, 255, 0.6);
+    font-size: var(--font-size-xs);
+    color: rgba(255, 255, 255, 0.35);
     margin: 0;
+    font-weight: normal;
 }
 
 .footer-links {
