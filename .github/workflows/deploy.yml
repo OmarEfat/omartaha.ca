@@ -12,6 +12,16 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Update last modified timestamp
+        run: |
+          # Get current timestamp with exact time in CDT (Central Daylight Time)
+          CURRENT_TIMESTAMP=$(TZ='America/Chicago' date '+%B %d, %Y at %I:%M %p %Z')
+          
+          # Update the timestamp in index.html
+          sed -i "s|<span id=\"last-updated-date\">.*</span>|<span id=\"last-updated-date\">$CURRENT_TIMESTAMP</span>|g" index.html
+          
+          echo "Updated timestamp to: $CURRENT_TIMESTAMP"
+
       - name: Deploy to server
         run: |
           TARGET=/var/www/omartaha.ca/html
