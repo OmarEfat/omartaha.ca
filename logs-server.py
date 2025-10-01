@@ -1,24 +1,19 @@
 #!/usr/bin/env python3
 """
-Simple web server to view Nginx access logs and track visitor sources 
+Simple web server to view Nginx access logs in a friendly interface
 """
 
 from http.server import HTTPServer, BaseHTTPRequestHandler
 import json
 import re
-from datetime import datetime
-from collections import Counter, defaultdict
-from urllib.parse import parse_qs, urlparse
-import os
+from collections import Counter
 
 class LogAnalyzer:
-    def __init__(self, log_file='/var/log/nginx/access.log', sources_file='/var/www/omartaha.ca/html/sources.txt'):
+    def __init__(self, log_file='/var/log/nginx/access.log'):
         self.log_file = log_file
-        self.sources_file = sources_file
         
     def parse_nginx_log_line(self, line):
         """Parse a single Nginx log line"""
-        # Nginx log format: IP - - [timestamp] "METHOD PATH HTTP/1.1" status bytes "referrer" "user-agent"
         pattern = r'(\S+) - - \[(.*?)\] "(.*?)" (\d+) (\d+) "(.*?)" "(.*?)"'
         match = re.match(pattern, line)
         
@@ -78,49 +73,12 @@ class LogAnalyzer:
             'top_pages': page_counts.most_common(10),
             'recent_visitors': logs[:20]
         }
-    
-    def get_sources(self):
-        """Get tracked sources from custom tracking"""
-        sources = defaultdict(int)
-        try:
-            if os.path.exists(self.sources_file):
-                with open(self.sources_file, 'r') as f:
-                    for line in f:
-                        line = line.strip()
-                        if line:
-                            try:
-                                data = json.loads(line)
-                                source = data.get('source', 'direct')
-                                sources[source] += 1
-                            except json.JSONDecodeError:
-                                pass
-        except FileNotFoundError:
-            pass
-        
-        return dict(sources)
-    
-    def log_source(self, ip, source, referrer, user_agent):
-        """Log a visitor source"""
-        try:
-            os.makedirs(os.path.dirname(self.sources_file), exist_ok=True)
-            with open(self.sources_file, 'a') as f:
-                data = {
-                    'timestamp': datetime.now().isoformat(),
-                    'ip': ip,
-                    'source': source,
-                    'referrer': referrer,
-                    'user_agent': user_agent
-                }
-                f.write(json.dumps(data) + '\n')
-        except Exception as e:
-            print(f"Error logging source: {e}")
 
 class LogViewerHandler(BaseHTTPRequestHandler):
     def do_GET(self):
         analyzer = LogAnalyzer()
         
-        if self.path == '/' or self.path.startswith('/?'):
-            # Serve the dashboard
+        if self.path == '/':
             self.send_response(200)
             self.send_header('Content-type', 'text/html')
             self.end_headers()
@@ -129,55 +87,15 @@ class LogViewerHandler(BaseHTTPRequestHandler):
             self.wfile.write(html.encode())
             
         elif self.path == '/api/stats':
-            # API endpoint for stats
             self.send_response(200)
             self.send_header('Content-type', 'application/json')
-            self.send_header('Access-Control-Allow-Origin', '*')
             self.end_headers()
             
             stats = analyzer.get_stats()
-            sources = analyzer.get_sources()
-            stats['sources'] = sources
-            
             self.wfile.write(json.dumps(stats).encode())
         else:
             self.send_response(404)
             self.end_headers()
-    
-    def do_POST(self):
-        if self.path == '/api/track':
-            # Track visitor source
-            content_length = int(self.headers['Content-Length'])
-            post_data = self.rfile.read(content_length)
-            
-            try:
-                data = json.loads(post_data.decode())
-                analyzer = LogAnalyzer()
-                analyzer.log_source(
-                    self.client_address[0],
-                    data.get('source', 'direct'),
-                    data.get('referrer', ''),
-                    data.get('user_agent', '')
-                )
-                
-                self.send_response(200)
-                self.send_header('Content-type', 'application/json')
-                self.send_header('Access-Control-Allow-Origin', '*')
-                self.end_headers()
-                self.wfile.write(json.dumps({'status': 'ok'}).encode())
-            except Exception as e:
-                self.send_response(500)
-                self.end_headers()
-        else:
-            self.send_response(404)
-            self.end_headers()
-    
-    def do_OPTIONS(self):
-        self.send_response(200)
-        self.send_header('Access-Control-Allow-Origin', '*')
-        self.send_header('Access-Control-Allow-Methods', 'POST, GET, OPTIONS')
-        self.send_header('Access-Control-Allow-Headers', 'Content-Type')
-        self.end_headers()
     
     def get_dashboard_html(self):
         """Generate the dashboard HTML"""
@@ -186,7 +104,7 @@ class LogViewerHandler(BaseHTTPRequestHandler):
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>omartaha.ca - Analytics Dashboard</title>
+    <title>Nginx Logs Viewer</title>
     <style>
         * {
             margin: 0;
@@ -294,16 +212,6 @@ class LogViewerHandler(BaseHTTPRequestHandler):
             background: #f8f9fa;
         }
         
-        .source-tag {
-            display: inline-block;
-            padding: 4px 12px;
-            border-radius: 20px;
-            background: #667eea;
-            color: white;
-            font-size: 0.85em;
-            font-weight: 500;
-        }
-        
         .ip-address {
             font-family: 'Courier New', monospace;
             color: #764ba2;
@@ -338,35 +246,18 @@ class LogViewerHandler(BaseHTTPRequestHandler):
             color: white;
             font-size: 1.2em;
         }
-        
-        .chart-container {
-            margin: 20px 0;
-        }
-        
-        .bar {
-            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
-            height: 30px;
-            margin: 10px 0;
-            border-radius: 4px;
-            display: flex;
-            align-items: center;
-            padding: 0 10px;
-            color: white;
-            font-weight: 500;
-            transition: width 0.5s ease;
-        }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>📊 Analytics Dashboard</h1>
+            <h1>📊 Nginx Logs Viewer</h1>
             <p>omartaha.ca Traffic Insights</p>
-            <button class="refresh-btn" onclick="loadStats()">🔄 Refresh Data</button>
+            <button class="refresh-btn" onclick="loadStats()">🔄 Refresh</button>
         </header>
         
         <div id="content">
-            <div class="loading">Loading analytics...</div>
+            <div class="loading">Loading logs...</div>
         </div>
     </div>
     
@@ -385,8 +276,6 @@ class LogViewerHandler(BaseHTTPRequestHandler):
         }
         
         function displayStats(data) {
-            const maxCount = data.top_ips.length > 0 ? data.top_ips[0][1] : 1;
-            
             let html = `
                 <div class="stats-grid">
                     <div class="stat-card">
@@ -403,32 +292,6 @@ class LogViewerHandler(BaseHTTPRequestHandler):
                     </div>
                 </div>
             `;
-            
-            // Sources section
-            if (data.sources && Object.keys(data.sources).length > 0) {
-                html += `
-                    <div class="section">
-                        <h2>🎯 Traffic Sources</h2>
-                        <div class="chart-container">
-                `;
-                
-                const sortedSources = Object.entries(data.sources).sort((a, b) => b[1] - a[1]);
-                const maxSourceCount = sortedSources[0][1];
-                
-                sortedSources.forEach(([source, count]) => {
-                    const width = (count / maxSourceCount) * 100;
-                    html += `
-                        <div class="bar" style="width: ${width}%">
-                            ${source}: ${count} visits
-                        </div>
-                    `;
-                });
-                
-                html += `
-                        </div>
-                    </div>
-                `;
-            }
             
             // Top IPs
             html += `
@@ -539,9 +402,8 @@ class LogViewerHandler(BaseHTTPRequestHandler):
 </html>'''
 
 def run_server(port=9000):
-    server = HTTPServer(('0.0.0.0', port), LogViewerHandler)
-    print(f'📊 Analytics Dashboard running at http://localhost:{port}')
-    print(f'🔒 Make sure to secure this with authentication in production!')
+    server = HTTPServer(('127.0.0.1', port), LogViewerHandler)
+    print(f'📊 Nginx Logs Viewer running at http://localhost:{port}')
     print(f'Press Ctrl+C to stop')
     server.serve_forever()
 
