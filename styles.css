@@ -562,7 +562,7 @@ body {
 /* Skills Section */
 .skills {
     padding: var(--space-20) 0;
-    background: var(--background);
+    background: var(--background-secondary);
 }
 
 .skills-grid {
@@ -624,14 +624,14 @@ body {
 /* Projects Section */
 .projects {
     padding: var(--space-20) 0;
-    background: var(--background-secondary);
+    background: var(--background);
 }
 
 .projects-grid {
     display: grid;
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
     gap: var(--space-8);
-    max-width: 800px;
+    max-width: 1200px;
     margin: 0 auto;
 }
 
@@ -654,6 +654,7 @@ body {
     flex-direction: column;
     width: 100%;
     margin: 0 auto;
+    height: 100%;
 }
 
 .project-card::before {
@@ -674,13 +675,14 @@ body {
 
 .project-image {
     width: 100%;
-    aspect-ratio: 16 / 9;
+    height: 280px;
     border-radius: var(--border-radius-lg) var(--border-radius-lg) 0 0;
     background: var(--background-secondary);
     display: flex;
     align-items: center;
     justify-content: center;
     padding: var(--space-3);
+    overflow: hidden;
 }
 
 .project-image img {
@@ -852,6 +854,176 @@ body {
 .education-gpa {
     font-weight: 600;
     color: var(--primary-color) !important;
+}
+
+/* Honors & Awards Section */
+.honors {
+    padding: var(--space-20) 0;
+    background: var(--background);
+}
+
+.honors-content {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.honor-card {
+    display: flex;
+    align-items: center;
+    gap: var(--space-6);
+    background: white;
+    padding: var(--space-8);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-light);
+    transition: var(--transition-base);
+}
+
+.honor-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-medium);
+}
+
+.honor-icon {
+    flex-shrink: 0;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+    border-radius: 50%;
+    color: white;
+}
+
+.honor-icon i {
+    font-size: var(--font-size-2xl);
+}
+
+.honor-details {
+    flex: 1;
+}
+
+.honor-details h3 {
+    font-size: var(--font-size-xl);
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: var(--space-2);
+}
+
+.honor-institution {
+    color: var(--text-secondary);
+    font-weight: 500;
+    margin-bottom: var(--space-2);
+}
+
+.honor-date {
+    display: inline-block;
+    color: var(--primary-color);
+    font-weight: 600;
+    background: rgba(59, 130, 246, 0.1);
+    padding: var(--space-1) var(--space-3);
+    border-radius: var(--border-radius);
+    font-size: var(--font-size-sm);
+}
+
+/* Volunteering Section */
+.volunteering {
+    padding: var(--space-20) 0;
+    background: var(--background-secondary);
+}
+
+.volunteering-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: var(--space-8);
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.volunteer-card {
+    background: white;
+    padding: var(--space-6);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-light);
+    transition: var(--transition-base);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+}
+
+.volunteer-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-medium);
+}
+
+.volunteer-icon {
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #10b981, #06b6d4);
+    border-radius: var(--border-radius);
+    color: white;
+    flex-shrink: 0;
+}
+
+.volunteer-icon i {
+    font-size: var(--font-size-xl);
+}
+
+.volunteer-content h3 {
+    font-size: var(--font-size-lg);
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: var(--space-2);
+}
+
+.volunteer-organization {
+    color: var(--text-secondary);
+    font-weight: 500;
+    font-size: var(--font-size-sm);
+    margin-bottom: var(--space-2);
+}
+
+.volunteer-date {
+    display: inline-block;
+    color: #10b981;
+    font-weight: 600;
+    background: rgba(16, 185, 129, 0.1);
+    padding: var(--space-1) var(--space-3);
+    border-radius: var(--border-radius);
+    font-size: var(--font-size-xs);
+    margin-bottom: var(--space-3);
+}
+
+.volunteer-description {
+    color: var(--text-secondary);
+    line-height: 1.6;
+    font-size: var(--font-size-sm);
+}
+
+.volunteer-description-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.volunteer-description-list li {
+    color: var(--text-secondary);
+    line-height: 1.6;
+    font-size: var(--font-size-sm);
+    margin-bottom: var(--space-2);
+    padding-left: var(--space-5);
+    position: relative;
+}
+
+.volunteer-description-list li::before {
+    content: '▶';
+    position: absolute;
+    left: 0;
+    color: #10b981;
+    font-size: var(--font-size-xs);
 }
 
 /* Contact Section */
@@ -1046,6 +1218,10 @@ body {
     }
 
     .skills-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .volunteering-grid {
         grid-template-columns: 1fr;
     }
 
