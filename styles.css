@@ -859,7 +859,7 @@ body {
 /* Honors & Awards Section */
 .honors {
     padding: var(--space-20) 0;
-    background: var(--background);
+    background: var(--background-secondary);
 }
 
 .honors-content {
@@ -929,7 +929,7 @@ body {
 /* Volunteering Section */
 .volunteering {
     padding: var(--space-20) 0;
-    background: var(--background-secondary);
+    background: var(--background);
 }
 
 .volunteering-grid {
