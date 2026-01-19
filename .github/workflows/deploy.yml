@@ -25,4 +25,7 @@ jobs:
       - name: Deploy to server
         run: |
           TARGET=/var/www/omartaha.ca/html
-          rsync -av --exclude='.git*' --exclude='.github' --delete . $TARGET
+          echo "Deploying to $TARGET"
+          rsync -av --exclude='.git*' --exclude='.github' --exclude='logs-server.py' --delete . $TARGET
+          echo "Deployment complete"
+          ls -la $TARGET | head -20
