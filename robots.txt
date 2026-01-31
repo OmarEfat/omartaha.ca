@@ -1,0 +1,7 @@
+# Robots.txt for omartaha.ca
+
+User-agent: *
+Allow: /
+
+# Block private documents from being indexed
+Disallow: /docs/
