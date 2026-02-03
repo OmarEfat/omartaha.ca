@@ -757,6 +757,39 @@ section {
     font-size: 0.85rem;
 }
 
+.project-availability-badge {
+    position: absolute;
+    top: var(--space-3);
+    right: var(--space-3);
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+    color: white;
+    padding: var(--space-2) var(--space-3);
+    border-radius: var(--border-radius);
+    font-size: var(--font-size-xs);
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    box-shadow: 0 4px 12px rgba(34, 197, 94, 0.35);
+    z-index: 10;
+}
+
+.project-availability-badge i {
+    font-size: 0.85rem;
+}
+
+.project-card-hidden {
+    display: none;
+}
+
+.project-card-static {
+    cursor: default;
+}
+
+.project-card-static .project-link {
+    pointer-events: none;
+}
+
 @keyframes pulse-badge {
     0%, 100% {
         box-shadow: 0 4px 12px rgba(6, 182, 212, 0.4);
@@ -816,6 +849,19 @@ section {
     line-height: 1.5;
     font-size: var(--font-size-sm);
     flex: 1;
+}
+
+.project-fine-print {
+    color: var(--text-light);
+    font-size: var(--font-size-xs);
+    margin-bottom: var(--space-3);
+    line-height: 1.4;
+}
+
+.project-meta-line {
+    margin-bottom: var(--space-3);
+    color: var(--text-light);
+    font-size: var(--font-size-xs);
 }
 
 .project-tech {
