@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MultiCopy – Chrome Extension</title>
+    <link rel="icon" type="image/x-icon" href="/assets/icons/omar-taha.png">
+    <link rel="stylesheet" href="/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .mc-hero {
+            padding: 140px 0 80px;
+            text-align: center;
+            background: var(--background);
+        }
+
+        .mc-hero-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            border-radius: 20px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 12px 32px rgba(99, 102, 241, 0.3);
+        }
+
+        .mc-hero-icon i {
+            font-size: 2rem;
+            color: white;
+        }
+
+        .mc-hero h1 {
+            font-size: var(--font-size-5xl);
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.75rem;
+        }
+
+        .mc-hero p {
+            font-size: var(--font-size-xl);
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .mc-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+            padding: 0.625rem 1.25rem;
+            border-radius: 2rem;
+            font-size: var(--font-size-sm);
+            font-weight: 600;
+        }
+
+        .mc-features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr));
+            gap: var(--space-6);
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .mc-feature-card {
+            background: var(--background);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-lg);
+            padding: var(--space-6);
+            text-align: center;
+            transition: var(--transition-base);
+        }
+
+        .mc-feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-medium);
+        }
+
+        .mc-feature-icon {
+            width: 48px;
+            height: 48px;
+            background: rgba(99, 102, 241, 0.1);
+            border-radius: 12px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: var(--space-3);
+        }
+
+        .mc-feature-icon i {
+            font-size: 1.25rem;
+            color: #6366f1;
+        }
+
+        .mc-feature-card h3 {
+            font-size: var(--font-size-base);
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: var(--space-2);
+        }
+
+        .mc-feature-card p {
+            font-size: var(--font-size-sm);
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        .mc-section {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .mc-card {
+            background: var(--background);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-lg);
+            padding: var(--space-8);
+            margin-bottom: var(--space-6);
+        }
+
+        .mc-card h3 {
+            font-size: var(--font-size-lg);
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: var(--space-4);
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+        }
+
+        .mc-card h3 i {
+            color: #6366f1;
+            font-size: 1.1rem;
+        }
+
+        .mc-card p {
+            color: var(--text-secondary);
+            margin-bottom: var(--space-3);
+            line-height: 1.6;
+        }
+
+        .mc-card ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .mc-card ul li {
+            color: var(--text-secondary);
+            padding: var(--space-2) 0;
+            padding-left: 1.75rem;
+            position: relative;
+            line-height: 1.5;
+        }
+
+        .mc-card ul li::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0.85rem;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+        }
+
+        .mc-card ul li strong {
+            color: var(--text-primary);
+        }
+
+        .mc-divider {
+            border: none;
+            border-top: 1px solid var(--border-color);
+            margin: var(--space-6) 0;
+        }
+
+        .mc-contact {
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .mc-contact p {
+            color: var(--text-secondary);
+            margin-bottom: var(--space-4);
+        }
+
+        .mc-contact a {
+            color: #6366f1;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .mc-contact a:hover {
+            text-decoration: underline;
+        }
+
+        .mc-back {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-2);
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: var(--font-size-sm);
+            font-weight: 500;
+            padding: var(--space-3) var(--space-4);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            transition: var(--transition-fast);
+            margin-top: var(--space-4);
+        }
+
+        .mc-back:hover {
+            color: var(--text-primary);
+            border-color: var(--text-light);
+        }
+
+        @media (max-width: 768px) {
+            .mc-hero {
+                padding: 110px 0 60px;
+            }
+            .mc-hero h1 {
+                font-size: var(--font-size-3xl);
+            }
+            .mc-card {
+                padding: var(--space-6);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <a href="/">Omar Taha</a>
+            </div>
+            <ul class="nav-menu" id="nav-menu">
+                <li class="nav-item">
+                    <a href="/" class="nav-link">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a href="/#projects" class="nav-link">Projects</a>
+                </li>
+                <li class="nav-item">
+                    <a href="/#contact" class="nav-link">Contact</a>
+                </li>
+            </ul>
+            <div class="nav-toggle" id="mobile-menu">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <section class="mc-hero">
+        <div class="container">
+            <div class="mc-hero-icon">
+                <i class="fas fa-copy"></i>
+            </div>
+            <h1>MultiCopy</h1>
+            <p>Copy multiple items. Paste in order. Simple.</p>
+            <div class="mc-badge">
+                <i class="fas fa-clock"></i>
+                Coming Soon to Chrome Web Store
+            </div>
+        </div>
+    </section>
+
+    <!-- Features -->
+    <section class="experience">
+        <div class="container">
+            <div class="section-header">
+                <h2>Features</h2>
+            </div>
+            <div class="mc-features">
+                <div class="mc-feature-card">
+                    <div class="mc-feature-icon">
+                        <i class="fas fa-layer-group"></i>
+                    </div>
+                    <h3>Multi-item Copy</h3>
+                    <p>Copy multiple items to your clipboard and paste them in the exact order you need.</p>
+                </div>
+                <div class="mc-feature-card">
+                    <div class="mc-feature-icon">
+                        <i class="fas fa-arrows-alt"></i>
+                    </div>
+                    <h3>Drag & Drop</h3>
+                    <p>Reorder your clipboard history with intuitive drag-and-drop controls.</p>
+                </div>
+                <div class="mc-feature-card">
+                    <div class="mc-feature-icon">
+                        <i class="fas fa-sliders-h"></i>
+                    </div>
+                    <h3>Quick Controls</h3>
+                    <p>Enable, disable, and reset your clipboard with one-click toggle controls.</p>
+                </div>
+                <div class="mc-feature-card">
+                    <div class="mc-feature-icon">
+                        <i class="fas fa-globe"></i>
+                    </div>
+                    <h3>Works Everywhere</h3>
+                    <p>Seamlessly works across all your tabs and websites in Chrome.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Privacy & Terms -->
+    <section class="skills">
+        <div class="container">
+            <div class="section-header">
+                <h2>Privacy & Terms</h2>
+            </div>
+            <div class="mc-section">
+                <div class="mc-card">
+                    <h3><i class="fas fa-shield-alt"></i> Privacy Policy</h3>
+                    <p><strong>We do not collect any data.</strong> Your privacy matters.</p>
+                    <ul>
+                        <li>Clipboard history is stored <strong>locally on your device</strong></li>
+                        <li>No data is transmitted to any server</li>
+                        <li>No analytics or tracking is used</li>
+                    </ul>
+                    <hr class="mc-divider">
+                    <h3><i class="fas fa-key"></i> Permissions Explained</h3>
+                    <ul>
+                        <li><strong>Host access (all sites)</strong> — Required to capture copy/paste events on any website</li>
+                        <li><strong>Storage</strong> — Used to save your clipboard history locally</li>
+                        <li><strong>Clipboard access</strong> — Required to read and paste your copied text</li>
+                    </ul>
+                </div>
+
+                <div class="mc-card">
+                    <h3><i class="fas fa-gavel"></i> Terms of Use</h3>
+                    <p>By using MultiCopy, you agree to the following:</p>
+                    <ul>
+                        <li>The extension is provided "as is" without warranty</li>
+                        <li>Use is permitted only to run the extension for personal productivity</li>
+                        <li>Redistribution, modification, or misuse of the code is not authorized</li>
+                        <li>All rights reserved © Omar Taha</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact -->
+    <section class="experience">
+        <div class="container">
+            <div class="mc-contact">
+                <p>Questions or feedback? Reach out at <a href="mailto:omar.effat18@gmail.com">omar.effat18@gmail.com</a></p>
+                <a href="/" class="mc-back"><i class="fas fa-arrow-left"></i> Back to omartaha.ca</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-left">
+                    <p>&copy; 2026 Omar Taha. All rights reserved.</p>
+                </div>
+                <div class="footer-links">
+                    <a href="/">Home</a>
+                    <a href="/#projects">Projects</a>
+                    <a href="/#contact">Contact</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/script.js"></script>
+</body>
+</html>
