@@ -864,6 +864,19 @@ section {
     color: white;
 }
 
+.project-card-multicopy:hover .project-link {
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    color: white;
+}
+
+.project-card-multicopy .project-card {
+    border: 1px solid rgba(99, 102, 241, 0.15);
+}
+
+.project-card-multicopy:hover .project-card {
+    box-shadow: 0 20px 40px rgba(99, 102, 241, 0.12);
+}
+
 .project-description {
     color: var(--text-secondary);
     margin-bottom: var(--space-3);
