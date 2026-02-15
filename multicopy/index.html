@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MultiCopy – Chrome Extension</title>
+    <title>Multi Copy – Chrome Extension by Omar Taha</title>
+    <meta name="description" content="Copy multiple items and paste them in order. Enhance your productivity with the Multi Copy Chrome extension.">
     <link rel="icon" type="image/x-icon" href="/assets/icons/omar-taha-ico.png">
     <link rel="stylesheet" href="/styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -54,10 +55,18 @@
             gap: 0.5rem;
             background: linear-gradient(135deg, #6366f1, #8b5cf6);
             color: white;
-            padding: 0.625rem 1.25rem;
+            padding: 0.75rem 1.5rem;
             border-radius: 2rem;
             font-size: var(--font-size-sm);
             font-weight: 600;
+            text-decoration: none;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .mc-badge:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(99, 102, 241, 0.4);
+            color: white;
         }
 
         .mc-features {
@@ -234,7 +243,6 @@
     </style>
 </head>
 <body>
-    <!-- Navigation -->
     <nav class="navbar" id="navbar">
         <div class="nav-container">
             <div class="nav-logo">
@@ -248,10 +256,10 @@
                     <a href="#features" class="nav-link">Features</a>
                 </li>
                 <li class="nav-item">
-                    <a href="#privacy" class="nav-link">Privacy & Terms</a>
+                    <a href="#privacy" class="nav-link">Privacy</a>
                 </li>
                 <li class="nav-item">
-                    <a href="#contact" class="nav-link">Contact</a>
+                    <a href="https://chromewebstore.google.com/detail/multi-copy/flagjolmpnfdnhnifjeiggnbpnjgpahc" target="_blank" class="nav-link" style="color: #6366f1; font-weight: 600;">Download</a>
                 </li>
             </ul>
             <div class="nav-toggle" id="mobile-menu">
@@ -262,22 +270,20 @@
         </div>
     </nav>
 
-    <!-- Hero -->
     <section id="home" class="mc-hero">
         <div class="container">
             <div class="mc-hero-icon">
                 <i class="fas fa-copy"></i>
             </div>
-            <h1>MultiCopy</h1>
+            <h1>Multi Copy</h1>
             <p>Copy multiple items. Paste in order. Simple.</p>
-            <div class="mc-badge">
-                <i class="fas fa-clock"></i>
-                Coming Soon to Chrome Web Store
-            </div>
+            <a href="https://chromewebstore.google.com/detail/multi-copy/flagjolmpnfdnhnifjeiggnbpnjgpahc" target="_blank" class="mc-badge">
+                <i class="fab fa-chrome"></i>
+                Add to Chrome — It's Free
+            </a>
         </div>
     </section>
 
-    <!-- Features -->
     <section id="features" class="experience">
         <div class="container">
             <div class="section-header">
@@ -316,7 +322,6 @@
         </div>
     </section>
 
-    <!-- Privacy & Terms -->
     <section id="privacy" class="skills">
         <div class="container">
             <div class="section-header">
@@ -334,27 +339,26 @@
                     <hr class="mc-divider">
                     <h3><i class="fas fa-key"></i> Permissions Explained</h3>
                     <ul>
-                        <li><strong>Host access (all sites)</strong> — Required to capture copy/paste events on any website</li>
-                        <li><strong>Storage</strong> — Used to save your clipboard history locally</li>
-                        <li><strong>Clipboard access</strong> — Required to read and paste your copied text</li>
+                        <li><strong>Host access</strong> — Required to capture copy/paste events on the websites you visit.</li>
+                        <li><strong>Storage</strong> — Used to save your clipboard queue locally on your browser.</li>
+                        <li><strong>Clipboard access</strong> — Required to read the text you copy and inject it when you paste.</li>
                     </ul>
                 </div>
 
                 <div class="mc-card">
                     <h3><i class="fas fa-gavel"></i> Terms of Use</h3>
-                    <p>By using MultiCopy, you agree to the following:</p>
+                    <p>By using Multi Copy, you agree to the following:</p>
                     <ul>
-                        <li>The extension is provided "as is" without warranty</li>
-                        <li>Use is permitted only to run the extension for personal productivity</li>
-                        <li>Redistribution, modification, or misuse of the code is not authorized</li>
-                        <li>All rights reserved © Omar Taha</li>
+                        <li>The extension is provided "as is" without warranty.</li>
+                        <li>Use is permitted only for personal productivity.</li>
+                        <li>Redistribution, modification, or misuse of the code is not authorized.</li>
+                        <li>All rights reserved © 2026 Omar Taha.</li>
                     </ul>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Contact -->
     <section id="contact" class="experience">
         <div class="container">
             <div class="mc-contact">
@@ -364,7 +368,6 @@
         </div>
     </section>
 
-    <!-- Footer -->
     <footer class="footer">
         <div class="container">
             <div class="footer-content">
