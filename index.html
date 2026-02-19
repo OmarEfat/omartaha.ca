@@ -4,6 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Omar Taha - Cybersecurity & Software Developer</title>
+    <script>
+        (function() {
+            var saved = localStorage.getItem('portfolio-theme');
+            var dark = saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches);
+            document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
+        })();
+    </script>
     <link rel="icon" type="image/x-icon" href="assets/icons/omar-taha-ico.png">
     <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -42,6 +49,9 @@
                     <a href="#contact" class="nav-link">Contact</a>
                 </li>
             </ul>
+            <button type="button" class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode" title="Toggle dark mode">
+                <i class="fas fa-moon" aria-hidden="true"></i>
+            </button>
             <div class="nav-toggle" id="mobile-menu">
                 <span class="bar"></span>
                 <span class="bar"></span>

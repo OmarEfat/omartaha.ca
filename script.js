@@ -451,12 +451,16 @@ class ThemeManager {
     constructor() {
         this.currentTheme = 'light';
         this.prefersDarkMode = false;
+        this.toggleButton = null;
     }
 
     init() {
         this.detectSystemPreference();
         this.loadSavedTheme();
         this.applyTheme();
+        this.cacheToggleButton();
+        this.bindThemeToggle();
+        this.updateToggleIcon();
     }
 
     detectSystemPreference() {
@@ -483,6 +487,32 @@ class ThemeManager {
     applyTheme() {
         document.documentElement.setAttribute('data-theme', this.currentTheme);
         this.updateMetaThemeColor();
+        this.updateToggleIcon();
+    }
+
+    cacheToggleButton() {
+        this.toggleButton = document.getElementById('theme-toggle');
+    }
+
+    bindThemeToggle() {
+        if (this.toggleButton) {
+            this.toggleButton.addEventListener('click', () => this.toggleTheme());
+        }
+    }
+
+    updateToggleIcon() {
+        if (!this.toggleButton) return;
+        const icon = this.toggleButton.querySelector('i');
+        if (!icon) return;
+        if (this.currentTheme === 'dark') {
+            icon.className = 'fas fa-sun';
+            this.toggleButton.setAttribute('aria-label', 'Switch to light mode');
+            this.toggleButton.setAttribute('title', 'Switch to light mode');
+        } else {
+            icon.className = 'fas fa-moon';
+            this.toggleButton.setAttribute('aria-label', 'Switch to dark mode');
+            this.toggleButton.setAttribute('title', 'Switch to dark mode');
+        }
     }
 
     toggleTheme() {
