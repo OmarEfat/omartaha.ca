@@ -769,6 +769,34 @@ section {
     display: block;
 }
 
+.project-image-lobbyez {
+    background: radial-gradient(circle at 20% 20%, #1e40af 0%, #0b1229 55%, #070b1b 100%);
+    color: #f8fafc;
+    flex-direction: row;
+    gap: var(--space-4);
+}
+
+.project-logo-mark {
+    width: 72px;
+    height: 72px;
+    border-radius: 20px;
+    background: linear-gradient(145deg, #5b7cff, #6f58f7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--font-size-xl);
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    box-shadow: 0 10px 30px rgba(91, 124, 255, 0.45);
+}
+
+.project-logo-text {
+    font-size: clamp(2rem, 5vw, 3.4rem);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    color: #e5e7eb;
+}
+
 .project-card-link:hover .project-image img {
     transform: scale(1.05);
 }
