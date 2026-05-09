@@ -1,8 +1,121 @@
 /**
- * omartaha.ca — site script
- * Navigation, scroll behavior, scroll-reveal, theme toggle, footer dates.
+ * Main Application Class - Follows SOLID principles
+ * Single Responsibility: Manages the overall application state and initialization
  */
+class PortfolioApp {
+    constructor() {
+        this.components = new Map();
+        this.isInitialized = false;
+    }
 
+    /**
+     * Initialize the application
+     */
+    init() {
+        if (this.isInitialized) {
+            console.warn('Application already initialized');
+            return;
+        }
+
+        try {
+            this.registerComponents();
+            this.initializeComponents();
+            this.bindEvents();
+            this.isInitialized = true;
+            console.log('Portfolio application initialized successfully');
+        } catch (error) {
+            console.error('Failed to initialize application:', error);
+        }
+    }
+
+    /**
+     * Register all application components
+     */
+    registerComponents() {
+        this.components.set('navigation', new NavigationManager());
+        this.components.set('scroll', new ScrollManager());
+        this.components.set('animation', new AnimationManager());
+        this.components.set('theme', new ThemeManager());
+    }
+
+    /**
+     * Initialize all registered components
+     */
+    initializeComponents() {
+        this.components.forEach((component, name) => {
+            try {
+                component.init();
+                console.log(`${name} component initialized`);
+            } catch (error) {
+                console.error(`Failed to initialize ${name} component:`, error);
+            }
+        });
+    }
+
+    /**
+     * Bind global event listeners
+     */
+    bindEvents() {
+        // Handle page visibility changes
+        document.addEventListener('visibilitychange', this.handleVisibilityChange.bind(this));
+        
+        // Handle resize events with debouncing
+        window.addEventListener('resize', this.debounce(this.handleResize.bind(this), 250));
+        
+        // Handle errors
+        window.addEventListener('error', this.handleError.bind(this));
+    }
+
+    /**
+     * Handle page visibility changes
+     */
+    handleVisibilityChange() {
+        if (document.visibilityState === 'visible') {
+            this.components.get('animation')?.resume();
+        } else {
+            this.components.get('animation')?.pause();
+        }
+    }
+
+    /**
+     * Handle window resize events
+     */
+    handleResize() {
+        this.components.forEach(component => {
+            if (typeof component.handleResize === 'function') {
+                component.handleResize();
+            }
+        });
+    }
+
+    /**
+     * Handle global errors
+     */
+    handleError(event) {
+        console.error('Global error:', event.error);
+        // Could implement error reporting here
+    }
+
+    /**
+     * Utility: Debounce function
+     */
+    debounce(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+            const later = () => {
+                clearTimeout(timeout);
+                func(...args);
+            };
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+        };
+    }
+}
+
+/**
+ * Navigation Manager Class
+ * Single Responsibility: Handle all navigation-related functionality
+ */
 class NavigationManager {
     constructor() {
         this.navbar = null;
@@ -10,233 +123,611 @@ class NavigationManager {
         this.navMenu = null;
         this.navLinks = [];
         this.isMenuOpen = false;
-        this.scrollThreshold = 24;
+        this.scrollThreshold = 50;
     }
 
     init() {
+        this.cacheElements();
+        this.bindEvents();
+        this.setActiveLink();
+    }
+
+    cacheElements() {
         this.navbar = document.getElementById('navbar');
         this.navToggle = document.getElementById('mobile-menu');
         this.navMenu = document.getElementById('nav-menu');
         this.navLinks = Array.from(document.querySelectorAll('.nav-link'));
 
-        if (!this.navbar || !this.navToggle || !this.navMenu) return;
-
-        this.navToggle.addEventListener('click', () => this.toggleMenu());
-        this.navToggle.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault();
-                this.toggleMenu();
-            }
-        });
-
-        this.navLinks.forEach(link => {
-            link.addEventListener('click', (e) => this.handleLinkClick(e));
-        });
-
-        document.addEventListener('click', (e) => this.handleOutsideClick(e));
-        window.addEventListener('scroll', throttle(() => this.handleScroll(), 16), { passive: true });
-        window.addEventListener('resize', debounce(() => this.handleResize(), 200));
-
-        this.handleScroll();
+        if (!this.navbar || !this.navToggle || !this.navMenu) {
+            throw new Error('Required navigation elements not found');
+        }
     }
 
-    toggleMenu(force) {
-        this.isMenuOpen = typeof force === 'boolean' ? force : !this.isMenuOpen;
+    bindEvents() {
+        // Mobile menu toggle
+        this.navToggle.addEventListener('click', this.toggleMobileMenu.bind(this));
+
+        // Navigation link clicks
+        this.navLinks.forEach(link => {
+            link.addEventListener('click', this.handleNavLinkClick.bind(this));
+        });
+
+        // Close mobile menu when clicking outside
+        document.addEventListener('click', this.handleOutsideClick.bind(this));
+
+        // Handle scroll for navbar styling
+        window.addEventListener('scroll', this.throttle(this.handleScroll.bind(this), 16));
+    }
+
+    toggleMobileMenu() {
+        this.isMenuOpen = !this.isMenuOpen;
         this.navMenu.classList.toggle('active', this.isMenuOpen);
         this.navToggle.classList.toggle('active', this.isMenuOpen);
-        this.navToggle.setAttribute('aria-expanded', String(this.isMenuOpen));
+        
+        // Prevent body scroll when menu is open
         document.body.style.overflow = this.isMenuOpen ? 'hidden' : '';
+        
+        // Update ARIA attributes for accessibility
+        this.navToggle.setAttribute('aria-expanded', this.isMenuOpen.toString());
     }
 
-    handleLinkClick(event) {
-        const href = event.currentTarget.getAttribute('href');
-        if (!href || !href.startsWith('#')) return;
+    handleNavLinkClick(event) {
+        const link = event.currentTarget;
+        const targetId = link.getAttribute('href');
 
-        const target = document.querySelector(href);
-        if (!target) return;
-
-        event.preventDefault();
-        const offset = this.navbar.offsetHeight;
-        const top = target.getBoundingClientRect().top + window.scrollY - offset + 1;
-        window.scrollTo({ top, behavior: 'smooth' });
-
-        if (this.isMenuOpen) this.toggleMenu(false);
+        if (targetId.startsWith('#')) {
+            event.preventDefault();
+            this.scrollToSection(targetId);
+            
+            // Close mobile menu if open
+            if (this.isMenuOpen) {
+                this.toggleMobileMenu();
+            }
+        }
     }
 
     handleOutsideClick(event) {
-        if (!this.isMenuOpen) return;
-        if (this.navMenu.contains(event.target) || this.navToggle.contains(event.target)) return;
-        this.toggleMenu(false);
+        if (this.isMenuOpen && 
+            !this.navMenu.contains(event.target) && 
+            !this.navToggle.contains(event.target)) {
+            this.toggleMobileMenu();
+        }
     }
 
     handleScroll() {
-        const y = window.scrollY;
-        this.navbar.classList.toggle('scrolled', y > this.scrollThreshold);
+        const scrollY = window.scrollY;
+        
+        // Add/remove scrolled class
+        this.navbar.classList.toggle('scrolled', scrollY > this.scrollThreshold);
+        
+        // Update active navigation link
+        this.setActiveLink();
+    }
 
-        const scrollPos = y + this.navbar.offsetHeight + 100;
-        let current = '';
-        document.querySelectorAll('section[id]').forEach(section => {
-            if (section.hasAttribute('hidden')) return;
-            const top = section.getBoundingClientRect().top + window.scrollY;
-            if (scrollPos >= top) current = section.id;
+    scrollToSection(targetId) {
+        const targetElement = document.querySelector(targetId);
+        if (!targetElement) return;
+
+        const navbarHeight = this.navbar.offsetHeight;
+        const targetPosition = targetElement.getBoundingClientRect().top + window.scrollY - navbarHeight;
+
+        window.scrollTo({
+            top: targetPosition,
+            behavior: 'smooth'
+        });
+    }
+
+    setActiveLink() {
+        const scrollPosition = window.scrollY + this.navbar.offsetHeight + 100;
+
+        // Find the current section
+        const sections = document.querySelectorAll('section[id]');
+        let currentSection = '';
+
+        sections.forEach(section => {
+            const sectionTop = section.getBoundingClientRect().top + window.scrollY;
+            if (scrollPosition >= sectionTop) {
+                currentSection = section.getAttribute('id');
+            }
         });
 
+        // Update active navigation link
         this.navLinks.forEach(link => {
-            const targetId = (link.getAttribute('href') || '').slice(1);
-            link.classList.toggle('active', targetId === current);
+            const targetId = link.getAttribute('href').substring(1);
+            link.classList.toggle('active', targetId === currentSection);
         });
     }
 
     handleResize() {
-        if (window.innerWidth > 768 && this.isMenuOpen) this.toggleMenu(false);
+        // Close mobile menu on resize to desktop
+        if (window.innerWidth > 768 && this.isMenuOpen) {
+            this.toggleMobileMenu();
+        }
+    }
+
+    /**
+     * Utility: Throttle function for scroll events
+     */
+    throttle(func, limit) {
+        let inThrottle;
+        return function() {
+            const args = arguments;
+            const context = this;
+            if (!inThrottle) {
+                func.apply(context, args);
+                inThrottle = true;
+                setTimeout(() => inThrottle = false, limit);
+            }
+        };
     }
 }
 
-class ScrollToTopManager {
+/**
+ * Scroll Manager Class
+ * Single Responsibility: Handle smooth scrolling and scroll-based interactions
+ */
+class ScrollManager {
     constructor() {
-        this.button = null;
-        this.threshold = 320;
+        this.scrollToTopButton = null;
+        this.scrollThreshold = 300;
     }
 
     init() {
-        this.button = document.createElement('button');
-        this.button.type = 'button';
-        this.button.className = 'scroll-to-top';
-        this.button.setAttribute('aria-label', 'Scroll to top');
-        this.button.innerHTML = '<i class="fas fa-arrow-up" aria-hidden="true"></i>';
-        document.body.appendChild(this.button);
+        this.createScrollToTopButton();
+        this.bindEvents();
+    }
 
-        this.button.addEventListener('click', () => {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        });
+    createScrollToTopButton() {
+        this.scrollToTopButton = document.createElement('button');
+        this.scrollToTopButton.className = 'scroll-to-top';
+        this.scrollToTopButton.innerHTML = '<i class="fas fa-arrow-up"></i>';
+        this.scrollToTopButton.setAttribute('aria-label', 'Scroll to top');
+        this.scrollToTopButton.style.cssText = `
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            box-shadow: var(--shadow-medium);
+        `;
 
-        window.addEventListener('scroll', throttle(() => this.handleScroll(), 100), { passive: true });
+        document.body.appendChild(this.scrollToTopButton);
+    }
+
+    bindEvents() {
+        window.addEventListener('scroll', this.throttle(this.handleScroll.bind(this), 16));
+        this.scrollToTopButton.addEventListener('click', this.scrollToTop.bind(this));
     }
 
     handleScroll() {
-        this.button.classList.toggle('visible', window.scrollY > this.threshold);
+        const scrollY = window.scrollY;
+        const shouldShow = scrollY > this.scrollThreshold;
+
+        this.scrollToTopButton.style.opacity = shouldShow ? '1' : '0';
+        this.scrollToTopButton.style.visibility = shouldShow ? 'visible' : 'hidden';
+        this.scrollToTopButton.style.transform = shouldShow ? 'translateY(0)' : 'translateY(10px)';
+    }
+
+    scrollToTop() {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    }
+
+    throttle(func, limit) {
+        let inThrottle;
+        return function() {
+            const args = arguments;
+            const context = this;
+            if (!inThrottle) {
+                func.apply(context, args);
+                inThrottle = true;
+                setTimeout(() => inThrottle = false, limit);
+            }
+        };
     }
 }
 
-class ScrollRevealManager {
+/**
+ * Animation Manager Class
+ * Single Responsibility: Handle scroll-based animations and visual effects
+ */
+class AnimationManager {
     constructor() {
-        this.observer = null;
+        this.observedElements = new Set();
+        this.intersectionObserver = null;
+        this.isAnimationPaused = false;
     }
 
     init() {
-        if (!('IntersectionObserver' in window) || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-            document.querySelectorAll('.animate-on-scroll').forEach(el => el.classList.add('animated'));
-            return;
-        }
+        this.setupIntersectionObserver();
+        this.observeElements();
+        this.addTypingEffect();
+    }
 
-        this.observer = new IntersectionObserver((entries) => {
+    setupIntersectionObserver() {
+        const options = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        this.intersectionObserver = new IntersectionObserver((entries) => {
+            if (this.isAnimationPaused) return;
+
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
-                    entry.target.classList.add('animated');
-                    this.observer.unobserve(entry.target);
+                    this.animateElement(entry.target);
+                    this.intersectionObserver.unobserve(entry.target);
                 }
             });
-        }, { threshold: 0.12, rootMargin: '0px 0px -60px 0px' });
+        }, options);
+    }
 
+    observeElements() {
         const selectors = [
             '.section-header',
             '.timeline-item',
             '.skill-category',
-            '.project-card-link',
+            '.project-card',
             '.about-text',
-            '.contact-item-link',
-            '.education-card',
-            '.honor-card'
+            '.contact-item',
+            '.education-card'
         ];
 
         selectors.forEach(selector => {
-            document.querySelectorAll(selector).forEach((el, i) => {
-                el.classList.add('animate-on-scroll');
-                el.style.transitionDelay = `${Math.min(i * 60, 240)}ms`;
-                this.observer.observe(el);
+            const elements = document.querySelectorAll(selector);
+            elements.forEach((element, index) => {
+                element.classList.add('animate-on-scroll');
+                element.style.animationDelay = `${index * 100}ms`;
+                this.intersectionObserver.observe(element);
+                this.observedElements.add(element);
             });
         });
     }
+
+    animateElement(element) {
+        element.classList.add('animated');
+    }
+
+    addTypingEffect() {
+        const heroTitle = document.querySelector('.hero-title .gradient-text');
+        if (!heroTitle) return;
+
+        const text = heroTitle.textContent;
+        heroTitle.textContent = '';
+        heroTitle.style.borderRight = '2px solid var(--primary-color)';
+
+        let charIndex = 0;
+        const typeSpeed = 100;
+
+        const typeText = () => {
+            if (charIndex < text.length) {
+                heroTitle.textContent += text.charAt(charIndex);
+                charIndex++;
+                setTimeout(typeText, typeSpeed);
+            } else {
+                // Remove cursor after typing is complete
+                setTimeout(() => {
+                    heroTitle.style.borderRight = 'none';
+                }, 1000);
+            }
+        };
+
+        // Start typing effect after a short delay
+        setTimeout(typeText, 500);
+    }
+
+    pause() {
+        this.isAnimationPaused = true;
+    }
+
+    resume() {
+        this.isAnimationPaused = false;
+    }
+
+    handleResize() {
+        // Re-observe elements if needed after resize
+        if (this.observedElements.size === 0) {
+            this.observeElements();
+        }
+    }
 }
 
+/**
+ * Theme Manager Class
+ * Single Responsibility: Handle theme switching and preferences
+ */
 class ThemeManager {
     constructor() {
-        this.toggle = null;
+        this.currentTheme = 'light';
+        this.prefersDarkMode = false;
+        this.toggleButton = null;
     }
 
     init() {
-        this.toggle = document.getElementById('theme-toggle');
-        if (!this.toggle) return;
+        this.detectSystemPreference();
+        this.loadSavedTheme();
+        this.applyTheme();
+        this.cacheToggleButton();
+        this.bindThemeToggle();
+        this.updateToggleIcon();
+    }
 
-        this.applyTheme(this.currentTheme());
-
-        this.toggle.addEventListener('click', () => {
-            const next = this.currentTheme() === 'dark' ? 'light' : 'dark';
-            localStorage.setItem('portfolio-theme', next);
-            this.applyTheme(next);
-        });
-
+    detectSystemPreference() {
+        this.prefersDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        
+        // Listen for system theme changes
         window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
-            if (localStorage.getItem('portfolio-theme')) return;
-            this.applyTheme(e.matches ? 'dark' : 'light');
+            if (!this.hasUserPreference()) {
+                this.currentTheme = e.matches ? 'dark' : 'light';
+                this.applyTheme();
+            }
         });
     }
 
-    currentTheme() {
-        return document.documentElement.getAttribute('data-theme') || 'dark';
-    }
-
-    applyTheme(theme) {
-        document.documentElement.setAttribute('data-theme', theme);
-        const icon = this.toggle.querySelector('i');
-        if (icon) {
-            icon.className = theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
-        }
-        const label = theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode';
-        this.toggle.setAttribute('aria-label', label);
-        this.toggle.setAttribute('title', label);
-
-        const meta = document.querySelector('meta[name="theme-color"]');
-        if (meta) meta.setAttribute('content', theme === 'dark' ? '#0a0a0a' : '#fafaf9');
-    }
-}
-
-function setFooterMeta() {
-    const yearEl = document.getElementById('year');
-    if (yearEl) yearEl.textContent = new Date().getFullYear();
-
-    const updatedEl = document.getElementById('last-updated-date');
-    if (updatedEl) {
-        const lm = document.lastModified ? new Date(document.lastModified) : new Date();
-        if (!isNaN(lm.getTime())) {
-            const fmt = new Intl.DateTimeFormat('en-CA', { year: 'numeric', month: 'short', day: 'numeric' });
-            updatedEl.textContent = fmt.format(lm);
+    loadSavedTheme() {
+        const savedTheme = localStorage.getItem('portfolio-theme');
+        if (savedTheme && ['light', 'dark'].includes(savedTheme)) {
+            this.currentTheme = savedTheme;
+        } else {
+            this.currentTheme = this.prefersDarkMode ? 'dark' : 'light';
         }
     }
+
+    applyTheme() {
+        document.documentElement.setAttribute('data-theme', this.currentTheme);
+        this.updateMetaThemeColor();
+        this.updateToggleIcon();
+    }
+
+    cacheToggleButton() {
+        this.toggleButton = document.getElementById('theme-toggle');
+    }
+
+    bindThemeToggle() {
+        if (this.toggleButton) {
+            this.toggleButton.addEventListener('click', () => this.toggleTheme());
+        }
+    }
+
+    updateToggleIcon() {
+        if (!this.toggleButton) return;
+        const icon = this.toggleButton.querySelector('i');
+        if (!icon) return;
+        if (this.currentTheme === 'dark') {
+            icon.className = 'fas fa-sun';
+            this.toggleButton.setAttribute('aria-label', 'Switch to light mode');
+            this.toggleButton.setAttribute('title', 'Switch to light mode');
+        } else {
+            icon.className = 'fas fa-moon';
+            this.toggleButton.setAttribute('aria-label', 'Switch to dark mode');
+            this.toggleButton.setAttribute('title', 'Switch to dark mode');
+        }
+    }
+
+    toggleTheme() {
+        this.currentTheme = this.currentTheme === 'light' ? 'dark' : 'light';
+        this.applyTheme();
+        this.saveTheme();
+    }
+
+    saveTheme() {
+        localStorage.setItem('portfolio-theme', this.currentTheme);
+    }
+
+    hasUserPreference() {
+        return localStorage.getItem('portfolio-theme') !== null;
+    }
+
+    updateMetaThemeColor() {
+        const metaThemeColor = document.querySelector('meta[name="theme-color"]');
+        if (metaThemeColor) {
+            const color = this.currentTheme === 'dark' ? '#1e293b' : '#ffffff';
+            metaThemeColor.setAttribute('content', color);
+        }
+    }
 }
 
-function throttle(fn, limit) {
-    let inFlight = false;
-    return function (...args) {
-        if (inFlight) return;
-        fn.apply(this, args);
-        inFlight = true;
-        setTimeout(() => { inFlight = false; }, limit);
-    };
+/**
+ * Utility Functions
+ */
+const Utils = {
+    /**
+     * Debounce function
+     */
+    debounce(func, wait, immediate = false) {
+        let timeout;
+        return function executedFunction(...args) {
+            const later = () => {
+                timeout = null;
+                if (!immediate) func(...args);
+            };
+            const callNow = immediate && !timeout;
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+            if (callNow) func(...args);
+        };
+    },
+
+    /**
+     * Throttle function
+     */
+    throttle(func, limit) {
+        let inThrottle;
+        return function() {
+            const args = arguments;
+            const context = this;
+            if (!inThrottle) {
+                func.apply(context, args);
+                inThrottle = true;
+                setTimeout(() => inThrottle = false, limit);
+            }
+        };
+    },
+
+    /**
+     * Check if element is in viewport
+     */
+    isInViewport(element) {
+        const rect = element.getBoundingClientRect();
+        return (
+            rect.top >= 0 &&
+            rect.left >= 0 &&
+            rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+            rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+        );
+    },
+
+    /**
+     * Smooth scroll to element
+     */
+    smoothScrollTo(targetElement, offset = 0) {
+        const targetPosition = targetElement.getBoundingClientRect().top + window.scrollY - offset;
+        window.scrollTo({
+            top: targetPosition,
+            behavior: 'smooth'
+        });
+    },
+
+    /**
+     * Format date for display
+     */
+    formatDate(date, options = {}) {
+        const defaultOptions = {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        };
+        return new Intl.DateTimeFormat('en-US', { ...defaultOptions, ...options }).format(date);
+    },
+
+    /**
+     * Validate email address
+     */
+    isValidEmail(email) {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email);
+    },
+
+    /**
+     * Get random number between min and max
+     */
+    randomBetween(min, max) {
+        return Math.random() * (max - min) + min;
+    },
+
+    /**
+     * Capitalize first letter of string
+     */
+    capitalize(str) {
+        return str.charAt(0).toUpperCase() + str.slice(1);
+    }
+};
+
+/**
+ * Performance Monitor
+ * Single Responsibility: Monitor and report application performance
+ */
+class PerformanceMonitor {
+    constructor() {
+        this.marks = new Map();
+        this.measures = new Map();
+    }
+
+    mark(name) {
+        performance.mark(name);
+        this.marks.set(name, performance.now());
+    }
+
+    measure(name, startMark, endMark = null) {
+        if (endMark) {
+            performance.measure(name, startMark, endMark);
+        } else {
+            performance.measure(name, startMark);
+        }
+        
+        const measure = performance.getEntriesByName(name, 'measure')[0];
+        this.measures.set(name, measure.duration);
+        
+        return measure.duration;
+    }
+
+    getMetrics() {
+        return {
+            marks: Object.fromEntries(this.marks),
+            measures: Object.fromEntries(this.measures),
+            navigation: performance.getEntriesByType('navigation')[0],
+            paint: Object.fromEntries(
+                performance.getEntriesByType('paint').map(entry => [entry.name, entry.startTime])
+            )
+        };
+    }
+
+    logMetrics() {
+        console.group('Performance Metrics');
+        console.table(this.getMetrics());
+        console.groupEnd();
+    }
 }
 
-function debounce(fn, wait) {
-    let id;
-    return function (...args) {
-        clearTimeout(id);
-        id = setTimeout(() => fn.apply(this, args), wait);
-    };
-}
-
+// Initialize application when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
-    new NavigationManager().init();
-    new ScrollToTopManager().init();
-    new ScrollRevealManager().init();
-    new ThemeManager().init();
-    setFooterMeta();
+    // Performance monitoring
+    const perfMonitor = new PerformanceMonitor();
+    perfMonitor.mark('app-init-start');
+
+    // Initialize main application
+    const app = new PortfolioApp();
+    app.init();
+
+    perfMonitor.mark('app-init-end');
+    perfMonitor.measure('app-initialization', 'app-init-start', 'app-init-end');
+
+    // Log performance metrics in development
+    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+        setTimeout(() => perfMonitor.logMetrics(), 2000);
+    }
 });
+
+// Handle page load for any remaining initialization
+window.addEventListener('load', () => {
+    // Remove any loading indicators
+    document.body.classList.add('loaded');
+    
+    // Force scroll to top on page load
+    window.scrollTo(0, 0);
+});
+
+// Export for potential testing or external use
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = {
+        PortfolioApp,
+        NavigationManager,
+        ScrollManager,
+        AnimationManager,
+        ThemeManager,
+        Utils,
+        PerformanceMonitor
+    };
+}
+
+function setCurrentYear(elementId) {
+    const year = new Date().getFullYear();
+    document.getElementById(elementId).textContent = year;
+  }
+  
+  // call it after DOM loads
+  document.addEventListener("DOMContentLoaded", () => {
+    setCurrentYear("year");
+  });
+  
