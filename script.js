@@ -286,18 +286,17 @@ class ScrollManager {
             position: fixed;
             bottom: 30px;
             right: 30px;
-            width: 50px;
-            height: 50px;
-            background: var(--primary-color);
-            color: white;
-            border: none;
-            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            background: var(--surface);
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
             cursor: pointer;
             opacity: 0;
             visibility: hidden;
             transition: all 0.3s ease;
             z-index: 1000;
-            box-shadow: var(--shadow-medium);
         `;
 
         document.body.appendChild(this.scrollToTopButton);
@@ -405,7 +404,7 @@ class AnimationManager {
 
         const text = heroTitle.textContent;
         heroTitle.textContent = '';
-        heroTitle.style.borderRight = '2px solid var(--primary-color)';
+        heroTitle.style.borderRight = '2px solid var(--accent-color)';
 
         let charIndex = 0;
         const typeSpeed = 100;
