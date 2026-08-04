@@ -22,6 +22,18 @@ jobs:
           
           echo "Updated timestamp to: $CURRENT_TIMESTAMP"
 
+      - name: Cache-bust versioned assets
+        run: |
+          # Cloudflare caches styles.css/script.js for 4h while index.html is
+          # served fresh, so a deploy can otherwise pair new HTML with stale JS.
+          # Stamping the asset URLs with the commit SHA forces a fresh fetch.
+          VERSION="${GITHUB_SHA:0:8}"
+
+          sed -i -E "s|(styles\.css\?v=)[^\"']*|\1$VERSION|g; s|(script\.js\?v=)[^\"']*|\1$VERSION|g" index.html
+
+          echo "Stamped asset URLs with version: $VERSION"
+          grep -E "styles\.css\?v=|script\.js\?v=" index.html
+
       - name: Deploy to server
         run: |
           TARGET=/var/www/omartaha.ca/html
