@@ -18,6 +18,11 @@
     <link rel="stylesheet" href="styles.css?v=dev">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* Small local override: remove the textual '>' pseudo-element and use an icon instead */
+        .hero-subtitle::before { content: none !important; }
+        .hero-title-icon { color: var(--accent-color); margin-right: 0.5rem; font-size: 1rem; vertical-align: middle; }
+    </style>
 </head>
 <body>
     <!-- Navigation -->
@@ -67,7 +72,7 @@
                 <h1 class="hero-title">
                     <span class="gradient-text">Omar Taha</span>
                 </h1>
-                <h2 class="hero-subtitle">Cybersecurity Operations Centre Analyst <span class="hero-company">@ Manitoba Hydro</span></h2>
+                <h2 class="hero-subtitle"><i class="fas fa-chevron-right hero-title-icon" aria-hidden="true"></i>Cybersecurity Operations Centre Analyst <span class="hero-company">@ Manitoba Hydro</span></h2>
                 <div class="hero-buttons">
                     <a href="#contact" class="btn btn-primary">Get In Touch</a>
                     <a href="Resume/Taha_Omar_Resume.pdf" target="_blank" class="btn btn-secondary">View Resume</a>
@@ -296,7 +301,7 @@
                                 </div>
                             </div>
                             <p class="project-description">
-                                Voice without the server drama. LobbyEZ lets hosts create a Discord voice lobby with <strong>/create-room</strong>, share a 6-digit code, and bring guests directly into voice without exposing the rest of the server.
+                                Voice without the server drama. LobbyEZ lets hosts create a Discord voice lobby with <strong>/create-room</strong>, share a 6-digit code, and bring guests directly[...]
                             </p>
                             <div class="project-tech">
                                 <span class="tech-tag">Discord Bot</span>
@@ -418,7 +423,7 @@
                                 </div>
                             </div>
                             <p class="project-description">
-                                My personal portfolio website you're currently viewing! A clean, responsive site showcasing my experience, projects, and skills. Built with vanilla HTML, CSS, and JavaScript. The website is self-hosted on my physical server, which is configured to automatically recover after any power or internet outage and protected using Cloudflare.
+                                My personal portfolio website you're currently viewing! A clean, responsive site showcasing my experience, projects, and skills. Built with vanilla HTML, CSS, and [...]
                             </p>
                             <div class="project-tech">
                                 <span class="tech-tag">HTML</span>
