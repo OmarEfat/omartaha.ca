@@ -240,6 +240,8 @@ section {
     width: 80%;
 }
 
+/* Dark-only mode: the toggle button markup was removed from the nav. These
+   styles stay so re-adding the button (and unsetting FORCE_DARK) just works. */
 .theme-toggle {
     display: flex;
     align-items: center;

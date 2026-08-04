@@ -448,6 +448,9 @@ class AnimationManager {
  */
 class ThemeManager {
     constructor() {
+        // Dark-only mode. Flip to false to bring the light theme back; none of
+        // the switching logic below was removed, only the toggle button markup.
+        this.forceDark = true;
         this.currentTheme = 'light';
         this.prefersDarkMode = false;
         this.toggleButton = null;
@@ -467,7 +470,7 @@ class ThemeManager {
         
         // Listen for system theme changes
         window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
-            if (!this.hasUserPreference()) {
+            if (!this.forceDark && !this.hasUserPreference()) {
                 this.currentTheme = e.matches ? 'dark' : 'light';
                 this.applyTheme();
             }
@@ -475,6 +478,11 @@ class ThemeManager {
     }
 
     loadSavedTheme() {
+        if (this.forceDark) {
+            this.currentTheme = 'dark';
+            return;
+        }
+
         const savedTheme = localStorage.getItem('portfolio-theme');
         if (savedTheme && ['light', 'dark'].includes(savedTheme)) {
             this.currentTheme = savedTheme;
@@ -494,6 +502,12 @@ class ThemeManager {
     }
 
     bindThemeToggle() {
+        // The toggle button markup was removed, so there is nothing to bind
+        // while dark-only mode is on. Re-add the button to restore switching.
+        if (this.forceDark) {
+            return;
+        }
+
         if (this.toggleButton) {
             this.toggleButton.addEventListener('click', () => this.toggleTheme());
         }
