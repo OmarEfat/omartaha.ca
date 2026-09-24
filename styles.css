@@ -477,6 +477,22 @@ section {
     background: var(--background-secondary);
 }
 
+.experience-resume {
+    margin-top: var(--space-3);
+    color: var(--text-secondary);
+}
+
+.experience-resume a {
+    color: var(--accent-color);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+.experience-resume a:focus-visible {
+    outline: 2px solid var(--accent-color);
+    outline-offset: 4px;
+}
+
 .timeline {
     max-width: 800px;
     margin: 0 auto;
@@ -494,7 +510,7 @@ section {
 }
 
 .timeline-item {
-    margin-bottom: var(--space-12);
+    margin-bottom: var(--space-5);
     position: relative;
     padding-left: var(--space-16);
 }
@@ -615,27 +631,7 @@ section {
     font-size: var(--font-size-sm);
     color: var(--text-secondary);
     font-weight: 400;
-    margin-bottom: var(--space-4);
-}
-
-.timeline-achievements {
-    list-style: none;
-}
-
-.timeline-achievements li {
-    color: var(--text-secondary);
-    margin-bottom: var(--space-3);
-    padding-left: var(--space-5);
-    position: relative;
-}
-
-.timeline-achievements li::before {
-    content: '—';
-    position: absolute;
-    left: 0;
-    color: var(--accent-color);
-    font-family: var(--font-mono);
-    font-size: var(--font-size-sm);
+    margin-bottom: 0;
 }
 
 /* Skills Section */
@@ -1067,23 +1063,6 @@ section {
     border-color: var(--border-strong);
 }
 
-.honor-icon {
-    flex-shrink: 0;
-    width: 44px;
-    height: 44px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: var(--accent-soft);
-    border: 1px solid var(--accent-color);
-    border-radius: var(--border-radius);
-    color: var(--accent-color);
-}
-
-.honor-icon i {
-    font-size: var(--font-size-lg);
-}
-
 .honor-details {
     flex: 1;
 }
@@ -1468,9 +1447,6 @@ section {
         font-size: var(--font-size-xl);
     }
 
-    .timeline-achievements li {
-        font-size: var(--font-size-sm);
-    }
 }
 
 /* Animation Utilities */
