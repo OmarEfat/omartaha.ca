@@ -348,6 +348,7 @@ section {
     display: flex;
     gap: var(--space-3);
     justify-content: flex-start;
+    align-items: center;
     margin-bottom: var(--space-8);
     flex-wrap: wrap;
 }
@@ -391,6 +392,19 @@ section {
 .btn-secondary:hover {
     border-color: var(--primary-color);
     color: var(--primary-color);
+}
+
+.btn-resume {
+    min-height: 56px;
+    padding: var(--space-4) var(--space-8);
+    font-size: var(--font-size-lg);
+    font-weight: 600;
+    justify-content: center;
+}
+
+.btn-resume:focus-visible {
+    outline: 2px solid var(--text-primary);
+    outline-offset: 4px;
 }
 
 .social-links {
@@ -477,22 +491,6 @@ section {
     background: var(--background-secondary);
 }
 
-.experience-resume {
-    margin-top: var(--space-3);
-    color: var(--text-secondary);
-}
-
-.experience-resume a {
-    color: var(--accent-color);
-    text-decoration: underline;
-    text-underline-offset: 3px;
-}
-
-.experience-resume a:focus-visible {
-    outline: 2px solid var(--accent-color);
-    outline-offset: 4px;
-}
-
 .timeline {
     max-width: 800px;
     margin: 0 auto;
@@ -557,13 +555,14 @@ section {
 }
 
 .timeline-date {
+    display: inline-block;
     font-family: var(--font-mono);
-    color: var(--text-secondary);
-    font-weight: 400;
-    font-size: var(--font-size-xs);
-    background: transparent;
-    padding: var(--space-1) var(--space-2);
-    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    font-weight: 600;
+    font-size: var(--font-size-sm);
+    background: var(--background-secondary);
+    padding: var(--space-2) var(--space-3);
+    border: 1px solid var(--border-strong);
     border-radius: var(--border-radius);
     white-space: nowrap;
 }
