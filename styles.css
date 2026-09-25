@@ -348,7 +348,6 @@ section {
     display: flex;
     gap: var(--space-3);
     justify-content: flex-start;
-    align-items: center;
     margin-bottom: var(--space-8);
     flex-wrap: wrap;
 }
@@ -392,19 +391,6 @@ section {
 .btn-secondary:hover {
     border-color: var(--primary-color);
     color: var(--primary-color);
-}
-
-.btn-resume {
-    min-height: 56px;
-    padding: var(--space-4) var(--space-8);
-    font-size: var(--font-size-lg);
-    font-weight: 600;
-    justify-content: center;
-}
-
-.btn-resume:focus-visible {
-    outline: 2px solid var(--text-primary);
-    outline-offset: 4px;
 }
 
 .social-links {
@@ -508,7 +494,7 @@ section {
 }
 
 .timeline-item {
-    margin-bottom: var(--space-5);
+    margin-bottom: var(--space-12);
     position: relative;
     padding-left: var(--space-16);
 }
@@ -555,14 +541,13 @@ section {
 }
 
 .timeline-date {
-    display: inline-block;
     font-family: var(--font-mono);
-    color: var(--text-primary);
-    font-weight: 600;
-    font-size: var(--font-size-sm);
-    background: var(--background-secondary);
-    padding: var(--space-2) var(--space-3);
-    border: 1px solid var(--border-strong);
+    color: var(--text-secondary);
+    font-weight: 400;
+    font-size: var(--font-size-xs);
+    background: transparent;
+    padding: var(--space-1) var(--space-2);
+    border: 1px solid var(--border-color);
     border-radius: var(--border-radius);
     white-space: nowrap;
 }
@@ -630,7 +615,27 @@ section {
     font-size: var(--font-size-sm);
     color: var(--text-secondary);
     font-weight: 400;
-    margin-bottom: 0;
+    margin-bottom: var(--space-4);
+}
+
+.timeline-achievements {
+    list-style: none;
+}
+
+.timeline-achievements li {
+    color: var(--text-secondary);
+    margin-bottom: var(--space-3);
+    padding-left: var(--space-5);
+    position: relative;
+}
+
+.timeline-achievements li::before {
+    content: '—';
+    position: absolute;
+    left: 0;
+    color: var(--accent-color);
+    font-family: var(--font-mono);
+    font-size: var(--font-size-sm);
 }
 
 /* Skills Section */
@@ -1062,6 +1067,23 @@ section {
     border-color: var(--border-strong);
 }
 
+.honor-icon {
+    flex-shrink: 0;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--accent-soft);
+    border: 1px solid var(--accent-color);
+    border-radius: var(--border-radius);
+    color: var(--accent-color);
+}
+
+.honor-icon i {
+    font-size: var(--font-size-lg);
+}
+
 .honor-details {
     flex: 1;
 }
@@ -1446,6 +1468,9 @@ section {
         font-size: var(--font-size-xl);
     }
 
+    .timeline-achievements li {
+        font-size: var(--font-size-sm);
+    }
 }
 
 /* Animation Utilities */
